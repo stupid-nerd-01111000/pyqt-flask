@@ -21,11 +21,11 @@ class Login_window(QWidget):
         self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         #username_field
-        self.username_input = QLineEdit()
+        self.username_input = QLineEdit(self)
         self.username_input.setPlaceholderText('Enter your username')
 
         #password_field
-        self.password_input = QLineEdit()
+        self.password_input = QLineEdit(self)
         self.password_input.setPlaceholderText('Enter your password')
 
         #login_button
@@ -43,14 +43,27 @@ class Login_window(QWidget):
         self.setLayout(layout)
     
     def send_data(self):
-        pass
+        username = self.username_input.text()
+        password = self.password_input.text()
+
+        if not username or not password:
+            QMessageBox.warning(self, 'warning', 'Input field is empty!!!')
+            return
+
+        data = {'username': username, 'password': password}
+
+        try:
+            response = requests.post('http://127.0.0.1:5000/login', json=data)
+
+            if response.status_code == 200:
+                result = response.json()
+                QMessageBox.information(self, 'login success', f'{result['message']}')
+            else:
+                QMessageBox.information(self, 'login failed', "you can't login")
+        except Exception as e:
+            QMessageBox.critical(self, 'ERROR', f'could not connect to server : {e}')
 
 
-def receive_data():
-    pass
-
-def send_data():
-    pass
 
 
 if __name__ == '__main__':
